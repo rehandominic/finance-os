@@ -1,23 +1,26 @@
 "use client";
 
-import { useTheme } from "next-themes";
-import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
 import { Sun, Moon, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { useCurrency } from "./investments-shell";
+import { useTheme } from "@/lib/theme";
+import { useOptionalCurrency } from "./investments-shell";
 
 const NAV_LINKS = [
-  { label: "Investments", href: "/investments", active: true },
-  { label: "Assets", href: "/assets", active: false },
-  { label: "Liabilities", href: "/liabilities", active: false },
-  { label: "Goals", href: "/goals", active: false },
+  { label: "Investments", href: "/investments", enabled: true },
+  { label: "Projector",   href: "/projector",   enabled: true },
+  { label: "Assets",      href: "/assets",      enabled: false },
+  { label: "Liabilities", href: "/liabilities", enabled: false },
+  { label: "Goals",       href: "/goals",       enabled: false },
 ];
 
 export function Nav() {
   const { resolvedTheme, setTheme } = useTheme();
-  const { displayCurrency, toggleCurrency } = useCurrency();
+  const currency = useOptionalCurrency();
+  const pathname = usePathname();
   const router = useRouter();
   const [refreshing, setRefreshing] = useState(false);
 
@@ -49,64 +52,82 @@ export function Nav() {
             Finance OS
           </span>
           <nav className="hidden md:flex items-center gap-1">
-            {NAV_LINKS.map((link) => (
-              <a
-                key={link.href}
-                href={link.href}
-                className={`px-3 py-1.5 rounded-md text-sm transition-colors ${
-                  link.active
-                    ? "bg-muted font-medium text-foreground"
-                    : "text-muted-foreground hover:text-foreground hover:bg-muted/60"
-                } ${!link.active ? "opacity-50 pointer-events-none" : ""}`}
-              >
-                {link.label}
-              </a>
-            ))}
+            {NAV_LINKS.map((link) => {
+              const isActive = pathname.startsWith(link.href);
+              if (!link.enabled) {
+                return (
+                  <span
+                    key={link.href}
+                    className="px-3 py-1.5 rounded-md text-sm text-muted-foreground opacity-40 cursor-not-allowed select-none"
+                  >
+                    {link.label}
+                  </span>
+                );
+              }
+              return (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className={`px-3 py-1.5 rounded-md text-sm transition-colors ${
+                    isActive
+                      ? "bg-muted font-medium text-foreground"
+                      : "text-muted-foreground hover:text-foreground hover:bg-muted/60"
+                  }`}
+                >
+                  {link.label}
+                </Link>
+              );
+            })}
           </nav>
         </div>
 
         {/* Right: Actions */}
         <div className="flex items-center gap-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handleRefreshPrices}
-            disabled={refreshing}
-            className="hidden sm:flex gap-1.5 h-8 text-xs"
-          >
-            <RefreshCw className={`h-3.5 w-3.5 ${refreshing ? "animate-spin" : ""}`} />
-            {refreshing ? "Refreshing…" : "Refresh Prices"}
-          </Button>
+          {/* Refresh prices — only shown when currency context is available (investments routes) */}
+          {currency && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleRefreshPrices}
+              disabled={refreshing}
+              className="flex items-center gap-1.5 h-9 text-xs px-2.5"
+            >
+              <RefreshCw className={`h-3.5 w-3.5 shrink-0 ${refreshing ? "animate-spin" : ""}`} />
+              <span className="hidden sm:inline">{refreshing ? "Refreshing…" : "Refresh Prices"}</span>
+            </Button>
+          )}
 
-          {/* Currency Toggle */}
-          <div className="flex items-center rounded-md border border-border overflow-hidden h-8">
-            <button
-              onClick={() => displayCurrency !== "INR" && toggleCurrency()}
-              className={`px-2.5 text-xs h-full transition-colors ${
-                displayCurrency === "INR"
-                  ? "bg-foreground text-background font-medium"
-                  : "text-muted-foreground hover:bg-muted"
-              }`}
-            >
-              ₹ INR
-            </button>
-            <button
-              onClick={() => displayCurrency !== "USD" && toggleCurrency()}
-              className={`px-2.5 text-xs h-full transition-colors ${
-                displayCurrency === "USD"
-                  ? "bg-foreground text-background font-medium"
-                  : "text-muted-foreground hover:bg-muted"
-              }`}
-            >
-              $ USD
-            </button>
-          </div>
+          {/* Currency Toggle — only when inside InvestmentsShell */}
+          {currency && (
+            <div className="flex items-center rounded-md border border-border overflow-hidden h-9">
+              <button
+                onClick={() => currency.displayCurrency !== "INR" && currency.toggleCurrency()}
+                className={`px-3 text-xs h-full transition-colors ${
+                  currency.displayCurrency === "INR"
+                    ? "bg-foreground text-background font-medium"
+                    : "text-muted-foreground hover:bg-muted"
+                }`}
+              >
+                ₹<span className="hidden sm:inline"> INR</span>
+              </button>
+              <button
+                onClick={() => currency.displayCurrency !== "USD" && currency.toggleCurrency()}
+                className={`px-3 text-xs h-full transition-colors ${
+                  currency.displayCurrency === "USD"
+                    ? "bg-foreground text-background font-medium"
+                    : "text-muted-foreground hover:bg-muted"
+                }`}
+              >
+                $<span className="hidden sm:inline"> USD</span>
+              </button>
+            </div>
+          )}
 
           {/* Theme Toggle */}
           <Button
             variant="ghost"
             size="icon"
-            className="h-8 w-8"
+            className="h-9 w-9"
             onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
           >
             <Sun className="h-4 w-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />

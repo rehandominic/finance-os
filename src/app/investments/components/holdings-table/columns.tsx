@@ -21,31 +21,27 @@ type ColumnContext = {
   onDelete: (id: string) => void;
   onRefreshPrice: (id: string, ticker: string) => void;
   onAddTransaction: (inv: InvestmentWithStats) => void;
+  onEdit: (id: string) => void;
 };
 
-// Use a plain button with onClick passed directly — avoids complex generic types on Column
-function SortHeader({
-  onClick,
-  label,
-}: {
-  onClick: () => void;
-  label: string;
-}) {
+function SortHeader({ onClick, label }: { onClick: () => void; label: string }) {
   return (
     <button
       className="flex items-center gap-1 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors"
       onClick={onClick}
     >
       {label}
-      <ArrowUpDown className="h-3 w-3" />
+      <ArrowUpDown className="h-3 w-3 shrink-0" />
     </button>
   );
 }
 
 export function getColumns(ctx: ColumnContext): ColumnDef<InvestmentWithStats>[] {
   return [
+    // ── Name (text + ticker only, no badge) ──────────────────────────────────
     {
       accessorKey: "name",
+      size: 160,
       header: ({ column }) => (
         <SortHeader
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
@@ -56,44 +52,73 @@ export function getColumns(ctx: ColumnContext): ColumnDef<InvestmentWithStats>[]
         const inv = row.original;
         return (
           <div className="flex flex-col gap-0.5 min-w-0">
-            <div className="flex items-center gap-2">
-              <span className="font-medium text-sm truncate">{inv.name}</span>
-              <Badge
-                variant="secondary"
-                className={`text-[10px] px-1.5 py-0 shrink-0 ${INVESTMENT_TYPE_COLORS[inv.type]}`}
-              >
-                {INVESTMENT_TYPE_LABELS[inv.type]}
-              </Badge>
-            </div>
+            <span
+              className="font-medium text-sm truncate block"
+              title={inv.name}
+            >
+              {inv.name}
+            </span>
             {inv.ticker && (
-              <span className="text-xs text-muted-foreground font-mono">{inv.ticker}</span>
+              <span className="text-xs text-muted-foreground font-mono truncate block">
+                {inv.ticker}
+              </span>
             )}
           </div>
         );
       },
     },
+
+    // ── Type (badge only) ────────────────────────────────────────────────────
+    {
+      accessorKey: "type",
+      size: 82,
+      header: () => (
+        <span className="text-xs font-medium text-muted-foreground">Type</span>
+      ),
+      cell: ({ row }) => {
+        const inv = row.original;
+        return (
+          <Badge
+            variant="secondary"
+            className={`text-[10px] px-1.5 py-0 whitespace-nowrap ${INVESTMENT_TYPE_COLORS[inv.type]}`}
+          >
+            {INVESTMENT_TYPE_LABELS[inv.type]}
+          </Badge>
+        );
+      },
+      enableSorting: false,
+    },
+
+    // ── Qty ──────────────────────────────────────────────────────────────────
     {
       accessorKey: "totalQty",
+      size: 60,
       header: ({ column }) => (
         <SortHeader
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
           label="Qty"
         />
       ),
-      cell: ({ row }) => (
-        <span className="font-mono text-sm tabular-nums">
-          {row.original.totalQty % 1 === 0
-            ? row.original.totalQty.toLocaleString()
-            : row.original.totalQty.toFixed(4).replace(/\.?0+$/, "")}
-        </span>
-      ),
+      cell: ({ row }) => {
+        const qty = row.original.totalQty;
+        return (
+          <span className="font-mono text-sm tabular-nums">
+            {qty % 1 === 0
+              ? qty.toLocaleString()
+              : qty.toFixed(2).replace(/\.?0+$/, "")}
+          </span>
+        );
+      },
     },
+
+    // ── Avg Price ────────────────────────────────────────────────────────────
     {
       accessorKey: "avgPrice",
+      size: 82,
       header: ({ column }) => (
         <SortHeader
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          label="Avg Price"
+          label="Avg"
         />
       ),
       cell: ({ row }) => (
@@ -102,8 +127,11 @@ export function getColumns(ctx: ColumnContext): ColumnDef<InvestmentWithStats>[]
         </span>
       ),
     },
+
+    // ── CMP ──────────────────────────────────────────────────────────────────
     {
       accessorKey: "currentPrice",
+      size: 88,
       header: ({ column }) => (
         <SortHeader
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
@@ -123,7 +151,7 @@ export function getColumns(ctx: ColumnContext): ColumnDef<InvestmentWithStats>[]
                   e.stopPropagation();
                   ctx.onRefreshPrice(inv.id, inv.yahooTicker!);
                 }}
-                className="text-muted-foreground hover:text-foreground transition-colors"
+                className="text-muted-foreground hover:text-foreground transition-colors shrink-0"
                 title="Refresh price"
               >
                 <RefreshCw className="h-3 w-3" />
@@ -133,8 +161,11 @@ export function getColumns(ctx: ColumnContext): ColumnDef<InvestmentWithStats>[]
         );
       },
     },
+
+    // ── Invested ─────────────────────────────────────────────────────────────
     {
       accessorKey: "totalInvested",
+      size: 90,
       header: ({ column }) => (
         <SortHeader
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
@@ -147,8 +178,11 @@ export function getColumns(ctx: ColumnContext): ColumnDef<InvestmentWithStats>[]
         </span>
       ),
     },
+
+    // ── Current Value ────────────────────────────────────────────────────────
     {
       accessorKey: "currentValue",
+      size: 82,
       header: ({ column }) => (
         <SortHeader
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
@@ -161,8 +195,11 @@ export function getColumns(ctx: ColumnContext): ColumnDef<InvestmentWithStats>[]
         </span>
       ),
     },
+
+    // ── P&L ──────────────────────────────────────────────────────────────────
     {
       accessorKey: "pnl",
+      size: 82,
       header: ({ column }) => (
         <SortHeader
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
@@ -178,8 +215,11 @@ export function getColumns(ctx: ColumnContext): ColumnDef<InvestmentWithStats>[]
         );
       },
     },
+
+    // ── P&L % ────────────────────────────────────────────────────────────────
     {
       accessorKey: "pnlPercent",
+      size: 68,
       header: ({ column }) => (
         <SortHeader
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
@@ -190,31 +230,16 @@ export function getColumns(ctx: ColumnContext): ColumnDef<InvestmentWithStats>[]
         const pct = row.original.pnlPercent;
         return (
           <span className={`font-mono text-sm tabular-nums ${pct >= 0 ? "text-emerald-500" : "text-red-500"}`}>
-            {pct >= 0 ? "+" : ""}{pct.toFixed(2)}%
+            {pct >= 0 ? "+" : ""}{pct.toFixed(1)}%
           </span>
         );
       },
     },
-    {
-      accessorKey: "xirr",
-      header: ({ column }) => (
-        <SortHeader
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          label="XIRR"
-        />
-      ),
-      cell: ({ row }) => {
-        const xirr = row.original.xirr;
-        if (xirr == null) return <span className="text-muted-foreground font-mono text-sm">—</span>;
-        return (
-          <span className={`font-mono text-sm tabular-nums ${xirr >= 0 ? "text-emerald-500" : "text-red-500"}`}>
-            {xirr >= 0 ? "+" : ""}{xirr.toFixed(1)}%
-          </span>
-        );
-      },
-    },
+
+    // ── Actions ──────────────────────────────────────────────────────────────
     {
       id: "actions",
+      size: 44,
       header: () => <span className="sr-only">Actions</span>,
       cell: ({ row }) => {
         const inv = row.original;
@@ -237,7 +262,7 @@ export function getColumns(ctx: ColumnContext): ColumnDef<InvestmentWithStats>[]
                   Refresh Price
                 </DropdownMenuItem>
               )}
-              <DropdownMenuItem>
+              <DropdownMenuItem onClick={() => ctx.onEdit(inv.id)}>
                 <Pencil className="h-3.5 w-3.5 mr-2" />
                 Edit
               </DropdownMenuItem>

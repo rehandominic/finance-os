@@ -20,6 +20,11 @@ export function useCurrency() {
   return ctx;
 }
 
+// Returns null outside InvestmentsShell — use in components that render in multiple route contexts
+export function useOptionalCurrency() {
+  return useContext(CurrencyContext);
+}
+
 export function InvestmentsShell({
   children,
   exchangeRate,

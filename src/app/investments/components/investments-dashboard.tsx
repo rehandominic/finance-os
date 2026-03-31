@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
+import { useRouter } from "next/navigation";
 import { InvestmentWithStats } from "@/lib/types";
 import { InvestmentType } from "@/lib/enums";
 import { PortfolioSummaryCards } from "./portfolio-summary-cards";
@@ -8,16 +9,15 @@ import { PortfolioAreaChart } from "./portfolio-area-chart";
 import { AssetAllocationDonut } from "./asset-allocation-donut";
 import { HoldingsFilterBar, FilterType } from "./holdings-filter-bar";
 import { DataTable } from "./holdings-table/data-table";
-import { AddInvestmentDialog } from "./add-investment-dialog";
 
 interface Props {
   investments: InvestmentWithStats[];
 }
 
 export function InvestmentsDashboard({ investments }: Props) {
+  const router = useRouter();
   const [activeFilter, setActiveFilter] = useState<FilterType>("ALL");
   const [searchQuery, setSearchQuery] = useState("");
-  const [addDialogOpen, setAddDialogOpen] = useState(false);
 
   const filteredInvestments = useMemo(() => {
     return investments.filter((inv) => {
@@ -55,16 +55,11 @@ export function InvestmentsDashboard({ investments }: Props) {
           onFilterChange={setActiveFilter}
           searchQuery={searchQuery}
           onSearchChange={setSearchQuery}
-          onAddClick={() => setAddDialogOpen(true)}
+          onAddClick={() => router.push("/investments/add")}
         />
 
         <DataTable investments={filteredInvestments} globalFilter={searchQuery} />
       </div>
-
-      <AddInvestmentDialog
-        open={addDialogOpen}
-        onOpenChange={setAddDialogOpen}
-      />
     </div>
   );
 }

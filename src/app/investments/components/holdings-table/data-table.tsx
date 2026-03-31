@@ -94,6 +94,7 @@ export function DataTable({ investments, globalFilter }: Props) {
     onDelete: (id) => setDeleteId(id),
     onRefreshPrice: handleRefreshPrice,
     onAddTransaction: (inv) => setTxSheetInvestment(inv),
+    onEdit: (id) => router.push(`/investments/${id}/edit`),
   });
 
   const table = useReactTable({
@@ -143,13 +144,17 @@ export function DataTable({ investments, globalFilter }: Props) {
   return (
     <>
       <div className="rounded-xl border overflow-hidden">
-        <Table>
+        <Table className="w-full table-fixed">
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id} className="hover:bg-transparent border-b">
                 <TableHead className="w-8 px-2" />
                 {headerGroup.headers.map((header) => (
-                  <TableHead key={header.id} className="h-9 px-3 text-xs">
+                  <TableHead
+                    key={header.id}
+                    className="h-9 px-3 text-xs"
+                    style={{ width: header.column.columnDef.size }}
+                  >
                     {header.isPlaceholder
                       ? null
                       : flexRender(header.column.columnDef.header, header.getContext())}
@@ -224,20 +229,26 @@ export function DataTable({ investments, globalFilter }: Props) {
           </TableBody>
           <TableFooter>
             <TableRow className="border-t-2 bg-muted/40 hover:bg-muted/40">
+              {/* chevron */}
               <TableCell className="px-2 py-2" />
-              <TableCell className="px-3 py-2 text-xs font-medium" colSpan={4}>
+              {/* name + type + qty + avg + cmp */}
+              <TableCell className="px-3 py-2 text-xs font-medium" colSpan={5}>
                 Total ({visibleRows.length} holdings)
               </TableCell>
+              {/* invested */}
               <TableCell className="px-3 py-2 font-mono text-sm font-medium tabular-nums">
                 {fmt(totals.invested, displayCurrency)}
               </TableCell>
+              {/* value */}
               <TableCell className="px-3 py-2 font-mono text-sm font-medium tabular-nums">
                 {fmt(totals.value, displayCurrency)}
               </TableCell>
+              {/* pnl */}
               <TableCell className={`px-3 py-2 font-mono text-sm font-medium tabular-nums ${totals.pnl >= 0 ? "text-emerald-500" : "text-red-500"}`}>
                 {totals.pnl >= 0 ? "+" : ""}{fmt(totals.pnl, displayCurrency)}
               </TableCell>
-              <TableCell colSpan={3} />
+              {/* pnl% + actions */}
+              <TableCell colSpan={2} />
             </TableRow>
           </TableFooter>
         </Table>

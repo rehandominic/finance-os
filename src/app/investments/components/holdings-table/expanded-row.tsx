@@ -136,8 +136,8 @@ export function ExpandedRow({
           </Button>
         </div>
 
-        <div className="rounded-lg border overflow-hidden">
-          <table className="w-full text-xs">
+        <div className="rounded-lg border overflow-hidden overflow-x-auto">
+          <table className="w-full text-xs min-w-[520px]">
             <thead>
               <tr className="border-b bg-muted/40">
                 <th className="text-left px-3 py-2 text-muted-foreground font-medium">Date</th>

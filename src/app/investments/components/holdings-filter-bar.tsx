@@ -50,20 +50,22 @@ export function HoldingsFilterBar({
 
   return (
     <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-      {/* Type Filter Tabs */}
-      <Tabs value={activeFilter} onValueChange={(v) => onFilterChange(v as FilterType)}>
-        <TabsList className="h-8 p-0.5 gap-0.5 bg-muted/60">
-          {TABS.map((tab) => (
-            <TabsTrigger
-              key={tab.value}
-              value={tab.value}
-              className="h-7 px-3 text-xs rounded-sm data-[state=active]:bg-background data-[state=active]:shadow-sm"
-            >
-              {tab.label}
-            </TabsTrigger>
-          ))}
-        </TabsList>
-      </Tabs>
+      {/* Type Filter Tabs — scrollable on mobile */}
+      <div className="overflow-x-auto pb-0.5 max-w-full">
+        <Tabs value={activeFilter} onValueChange={(v) => onFilterChange(v as FilterType)}>
+          <TabsList className="h-8 p-0.5 gap-0.5 bg-muted/60 min-w-max">
+            {TABS.map((tab) => (
+              <TabsTrigger
+                key={tab.value}
+                value={tab.value}
+                className="h-7 px-3 text-xs rounded-sm data-[state=active]:bg-background data-[state=active]:shadow-sm whitespace-nowrap"
+              >
+                {tab.label}
+              </TabsTrigger>
+            ))}
+          </TabsList>
+        </Tabs>
+      </div>
 
       {/* Right: Search + Add */}
       <div className="flex items-center gap-2 w-full sm:w-auto">

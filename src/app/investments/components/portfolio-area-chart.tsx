@@ -189,16 +189,16 @@ export function PortfolioAreaChart({ investments }: Props) {
             Not enough data for this range
           </div>
         ) : (
-          <ResponsiveContainer width="100%" height={220}>
+          <ResponsiveContainer width="100%" height={200}>
             <AreaChart data={data} margin={{ top: 4, right: 4, left: 0, bottom: 0 }}>
               <defs>
                 <linearGradient id="gradInvested" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="hsl(var(--muted-foreground))" stopOpacity={0.15} />
-                  <stop offset="95%" stopColor="hsl(var(--muted-foreground))" stopOpacity={0} />
+                  <stop offset="5%" stopColor="#10b981" stopOpacity={0.1} />
+                  <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
                 </linearGradient>
                 <linearGradient id="gradValue" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="hsl(var(--chart-1))" stopOpacity={0.3} />
-                  <stop offset="95%" stopColor="hsl(var(--chart-1))" stopOpacity={0} />
+                  <stop offset="5%" stopColor="#10b981" stopOpacity={0.35} />
+                  <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
                 </linearGradient>
               </defs>
               <CartesianGrid
@@ -234,9 +234,10 @@ export function PortfolioAreaChart({ investments }: Props) {
                 type="monotone"
                 dataKey="invested"
                 name="invested"
-                stroke="hsl(var(--muted-foreground))"
+                stroke="#10b981"
                 strokeWidth={1.5}
                 strokeDasharray="4 2"
+                strokeOpacity={0.5}
                 fill="url(#gradInvested)"
                 dot={false}
                 activeDot={{ r: 3 }}
@@ -245,11 +246,11 @@ export function PortfolioAreaChart({ investments }: Props) {
                 type="monotone"
                 dataKey="value"
                 name="value"
-                stroke="hsl(var(--chart-1))"
+                stroke="#10b981"
                 strokeWidth={2}
                 fill="url(#gradValue)"
                 dot={false}
-                activeDot={{ r: 4 }}
+                activeDot={{ r: 4, fill: "#10b981" }}
               />
             </AreaChart>
           </ResponsiveContainer>
@@ -258,11 +259,11 @@ export function PortfolioAreaChart({ investments }: Props) {
         {/* Legend */}
         <div className="flex items-center gap-4 mt-2 justify-center">
           <div className="flex items-center gap-1.5">
-            <div className="w-5 h-0.5 bg-muted-foreground opacity-50" style={{ borderTop: "2px dashed" }} />
+            <div className="w-5 h-0.5 opacity-50" style={{ borderTop: "2px dashed #10b981" }} />
             <span className="text-xs text-muted-foreground">Invested</span>
           </div>
           <div className="flex items-center gap-1.5">
-            <div className="w-5 h-0.5" style={{ backgroundColor: "hsl(var(--chart-1))" }} />
+            <div className="w-5 h-0.5" style={{ backgroundColor: "#10b981" }} />
             <span className="text-xs text-muted-foreground">Current Value</span>
           </div>
         </div>

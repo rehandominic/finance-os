@@ -10,7 +10,6 @@ import {
   CommandList,
 } from "@/components/ui/command";
 import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
 import { InvestmentType, Geography, Currency } from "@/lib/enums";
 import { mapToInvestmentType, mapToGeography, mapToCurrency } from "@/lib/yahoo-finance";
 
@@ -86,12 +85,10 @@ export function StockSearchCombobox({ onSelect, onManual }: Props) {
     try {
       const res = await fetch(`/api/yahoo/quote?symbol=${encodeURIComponent(result.symbol)}`);
       const quote = await res.json();
-
       const mappedType = mapToInvestmentType(result);
       const type = mappedType ?? InvestmentType.INDIA_STOCK;
       const geography = mapToGeography(type);
       const currency = mapToCurrency(geography);
-
       onSelect({
         name: result.longname ?? result.shortname ?? result.symbol,
         ticker: result.symbol,
@@ -104,7 +101,6 @@ export function StockSearchCombobox({ onSelect, onManual }: Props) {
         previousClose: quote.chartPreviousClose ?? 0,
       });
     } catch {
-      // Still populate what we know from search, price can be filled manually
       const mappedType = mapToInvestmentType(result);
       const type = mappedType ?? InvestmentType.INDIA_STOCK;
       const geography = mapToGeography(type);
@@ -125,7 +121,6 @@ export function StockSearchCombobox({ onSelect, onManual }: Props) {
     }
   }
 
-  // Close dropdown on outside click
   useEffect(() => {
     function handleClick(e: MouseEvent) {
       if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
@@ -137,35 +132,40 @@ export function StockSearchCombobox({ onSelect, onManual }: Props) {
   }, []);
 
   return (
-    <div ref={containerRef} className="relative">
-      <div className="relative">
-        <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-        <Input
-          placeholder="Search for a stock, ETF, mutual fund or crypto…"
+    <div ref={containerRef} className="flex flex-col gap-3">
+      {/*
+        Flex-row search bar — icon is a sibling of the input, NOT absolutely positioned.
+        This guarantees text never starts under the icon on any device.
+      */}
+      <div className="flex items-center gap-3 h-10 pl-3.5 pr-3 rounded-lg border border-input bg-transparent transition-colors focus-within:border-ring focus-within:ring-2 focus-within:ring-ring/20">
+        <Search className="h-4 w-4 text-muted-foreground shrink-0" />
+        <input
+          placeholder="Search stocks, ETFs, mutual funds, crypto…"
           value={query}
           onChange={(e) => handleInput(e.target.value)}
           onFocus={() => results.length > 0 && setOpen(true)}
-          className="pl-9 pr-8 h-9"
           autoFocus
+          className="flex-1 min-w-0 bg-transparent outline-none text-sm placeholder:text-muted-foreground"
         />
         {(searching || fetching) ? (
-          <Loader2 className="absolute right-2.5 top-1/2 -translate-y-1/2 h-4 w-4 animate-spin text-muted-foreground" />
+          <Loader2 className="h-4 w-4 animate-spin text-muted-foreground shrink-0" />
         ) : query ? (
           <button
             onClick={() => { setQuery(""); setResults([]); setOpen(false); }}
-            className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+            className="text-muted-foreground hover:text-foreground transition-colors shrink-0"
           >
             <X className="h-4 w-4" />
           </button>
         ) : null}
       </div>
 
+      {/* Inline results */}
       {open && (
-        <div className="absolute top-full left-0 right-0 z-50 mt-1 rounded-lg border bg-popover shadow-md overflow-hidden">
+        <div className="rounded-lg border bg-popover shadow-sm overflow-hidden">
           <Command shouldFilter={false}>
-            <CommandList>
+            <CommandList className="max-h-64">
               {results.length === 0 ? (
-                <CommandEmpty className="py-4 text-sm text-muted-foreground">
+                <CommandEmpty className="py-6 text-sm text-muted-foreground text-center">
                   No results found.
                 </CommandEmpty>
               ) : (
@@ -175,7 +175,7 @@ export function StockSearchCombobox({ onSelect, onManual }: Props) {
                       key={r.symbol}
                       value={r.symbol}
                       onSelect={() => handleSelect(r)}
-                      className="flex items-center justify-between gap-3 px-3 py-2.5 cursor-pointer"
+                      className="flex items-center justify-between gap-3 px-3 py-3 cursor-pointer"
                     >
                       <div className="flex flex-col gap-0.5 min-w-0">
                         <span className="text-sm font-medium truncate">
@@ -200,7 +200,7 @@ export function StockSearchCombobox({ onSelect, onManual }: Props) {
                   ))}
                 </CommandGroup>
               )}
-              <div className="border-t px-3 py-2">
+              <div className="border-t px-3 py-2.5">
                 <button
                   onClick={() => { setOpen(false); onManual(); }}
                   className="text-xs text-muted-foreground hover:text-foreground transition-colors"

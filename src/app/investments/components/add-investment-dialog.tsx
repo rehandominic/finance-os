@@ -10,7 +10,6 @@ import {
   DialogHeader,
   DialogTitle,
   DialogDescription,
-  DialogFooter,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -182,8 +181,9 @@ export function AddInvestmentDialog({ open, onOpenChange }: Props) {
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent className="sm:max-w-lg max-h-[92vh] overflow-y-auto">
-        <DialogHeader>
+      <DialogContent className="sm:max-w-lg flex flex-col gap-0 p-0 max-h-[90dvh] overflow-hidden">
+        {/* Fixed header */}
+        <DialogHeader className="px-4 pt-4 pb-3 shrink-0 border-b">
           <DialogTitle>Add Investment</DialogTitle>
           <DialogDescription>
             {mode === "search"
@@ -192,7 +192,8 @@ export function AddInvestmentDialog({ open, onOpenChange }: Props) {
           </DialogDescription>
         </DialogHeader>
 
-        <div className="flex flex-col gap-4 py-1">
+        {/* Scrollable body */}
+        <div className="flex-1 min-h-0 overflow-y-auto px-4 py-4 flex flex-col gap-4">
           {/* ── Search / Name ── */}
           {mode === "search" ? (
             <StockSearchCombobox
@@ -420,8 +421,9 @@ export function AddInvestmentDialog({ open, onOpenChange }: Props) {
           )}
         </div>
 
+        {/* Fixed footer — always visible */}
         {mode === "form" && (
-          <DialogFooter>
+          <div className="shrink-0 flex flex-col-reverse sm:flex-row sm:justify-end gap-2 px-4 py-3 border-t bg-muted/50 rounded-b-xl">
             <Button
               variant="outline"
               onClick={() => handleOpenChange(false)}
@@ -432,7 +434,7 @@ export function AddInvestmentDialog({ open, onOpenChange }: Props) {
             <Button onClick={handleSubmit} disabled={isPending}>
               {isPending ? "Adding…" : "Add Investment"}
             </Button>
-          </DialogFooter>
+          </div>
         )}
       </DialogContent>
     </Dialog>
