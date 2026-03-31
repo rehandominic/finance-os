@@ -103,8 +103,6 @@ export function GrowthMatrix({ portfolioValue }: Props) {
     <div
       style={{
         overflowX: "auto",
-        overflowY: "auto",
-        maxHeight: "500px",
         borderRadius: "0.75rem",
         border: `1px solid ${borderColor}`,
       }}
