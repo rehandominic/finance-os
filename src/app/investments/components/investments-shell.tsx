@@ -12,11 +12,11 @@ type CurrencyContextValue = {
   fmt: (amount: number, fromCurrency: Currency) => string;
 };
 
-const CurrencyContext = createContext<CurrencyContextValue | null>(null);
+export const CurrencyContext = createContext<CurrencyContextValue | null>(null);
 
 export function useCurrency() {
   const ctx = useContext(CurrencyContext);
-  if (!ctx) throw new Error("useCurrency must be used within InvestmentsShell");
+  if (!ctx) throw new Error("useCurrency must be used within a Shell that provides CurrencyContext");
   return ctx;
 }
 

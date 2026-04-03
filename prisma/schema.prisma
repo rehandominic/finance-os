@@ -40,6 +40,48 @@ model Transaction {
   investment Investment @relation(fields: [investmentId], references: [id], onDelete: Cascade)
 }
 
+model Asset {
+  id            String    @id @default(cuid())
+  name          String
+  description   String?
+  type          AssetType
+  currency      Currency
+  purchaseDate  DateTime
+  purchasePrice Float
+  currentValue  Float
+  notes         String?
+
+  // Property
+  location String?
+  areaQty  Float?
+  areaUnit String? // "sq.ft" | "acres" | "cents" | "grams" | "kg" | "oz" | "tola" | "pieces"
+
+  // Vehicle
+  depreciationRate Float? // annual %
+
+  // Cash / FD
+  interestRate Float?   // annual %
+  maturityDate DateTime?
+  principal    Float?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  valuations ValuationEntry[]
+}
+
+model ValuationEntry {
+  id        String          @id @default(cuid())
+  assetId   String
+  date      DateTime
+  value     Float
+  source    ValuationSource
+  notes     String?
+  createdAt DateTime        @default(now())
+
+  asset Asset @relation(fields: [assetId], references: [id], onDelete: Cascade)
+}
+
 model Settings {
   id           String   @id @default("singleton")
   exchangeRate Float    @default(84)
@@ -71,4 +113,20 @@ enum TransactionType {
   SELL
   SIP
   DIVIDEND
+}
+
+enum AssetType {
+  PROPERTY
+  VEHICLE
+  CASH_FD
+  GOLD_METALS
+  ART_COLLECTIBLES
+  OTHER
+}
+
+enum ValuationSource {
+  PURCHASE
+  MANUAL
+  AUTO_DEPRECIATION
+  AUTO_INTEREST
 }

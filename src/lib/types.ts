@@ -1,4 +1,4 @@
-import { InvestmentType, Geography, Currency, TransactionType } from "@/lib/enums";
+import { InvestmentType, Geography, Currency, TransactionType, AssetType, ValuationSource } from "@/lib/enums";
 
 export type SerializedTransaction = {
   id: string;
@@ -35,6 +35,68 @@ export type InvestmentWithStats = {
   pnlPercent: number;
   avgPrice: number;
   xirr: number | null;
+};
+
+export type SerializedValuationEntry = {
+  id: string;
+  assetId: string;
+  date: string;
+  value: number;
+  source: ValuationSource;
+  notes: string | null;
+  createdAt: string;
+};
+
+export type AssetWithValuations = {
+  id: string;
+  name: string;
+  description: string | null;
+  type: AssetType;
+  currency: Currency;
+  purchaseDate: string;
+  purchasePrice: number;
+  currentValue: number;
+  notes: string | null;
+  location: string | null;
+  areaQty: number | null;
+  areaUnit: string | null;
+  depreciationRate: number | null;
+  interestRate: number | null;
+  maturityDate: string | null;
+  principal: number | null;
+  createdAt: string;
+  updatedAt: string;
+  valuations: SerializedValuationEntry[];
+  // Computed
+  appreciation: number;
+  appreciationPercent: number;
+};
+
+export const ASSET_TYPE_LABELS: Record<AssetType, string> = {
+  PROPERTY: "Property",
+  VEHICLE: "Vehicle",
+  CASH_FD: "Cash / FD",
+  GOLD_METALS: "Gold & Metals",
+  ART_COLLECTIBLES: "Art & Collectibles",
+  OTHER: "Other",
+};
+
+export const ASSET_TYPE_COLORS: Record<AssetType, string> = {
+  PROPERTY: "bg-blue-500/15 text-blue-600 dark:text-blue-400",
+  VEHICLE: "bg-orange-500/15 text-orange-600 dark:text-orange-400",
+  CASH_FD: "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400",
+  GOLD_METALS: "bg-amber-500/15 text-amber-600 dark:text-amber-400",
+  ART_COLLECTIBLES: "bg-purple-500/15 text-purple-600 dark:text-purple-400",
+  OTHER: "bg-slate-500/15 text-slate-600 dark:text-slate-400",
+};
+
+export const ASSET_TYPE_CHART_COLORS: Record<AssetType, string> = {
+  PROPERTY: "#3b82f6",
+  VEHICLE: "#f97316",
+  CASH_FD: "#10b981",
+  GOLD_METALS: "#f59e0b",
+  ART_COLLECTIBLES: "#a855f7",
+  OTHER: "#64748b",
 };
 
 export const INVESTMENT_TYPE_LABELS: Record<InvestmentType, string> = {

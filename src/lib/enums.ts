@@ -31,3 +31,21 @@ export const TransactionType = {
   DIVIDEND: "DIVIDEND",
 } as const;
 export type TransactionType = (typeof TransactionType)[keyof typeof TransactionType];
+
+export const AssetType = {
+  PROPERTY: "PROPERTY",
+  VEHICLE: "VEHICLE",
+  CASH_FD: "CASH_FD",
+  GOLD_METALS: "GOLD_METALS",
+  ART_COLLECTIBLES: "ART_COLLECTIBLES",
+  OTHER: "OTHER",
+} as const;
+export type AssetType = (typeof AssetType)[keyof typeof AssetType];
+
+export const ValuationSource = {
+  PURCHASE: "PURCHASE",
+  MANUAL: "MANUAL",
+  AUTO_DEPRECIATION: "AUTO_DEPRECIATION",
+  AUTO_INTEREST: "AUTO_INTEREST",
+} as const;
+export type ValuationSource = (typeof ValuationSource)[keyof typeof ValuationSource];

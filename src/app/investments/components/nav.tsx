@@ -12,7 +12,7 @@ import { useOptionalCurrency } from "./investments-shell";
 const NAV_LINKS = [
   { label: "Investments", href: "/investments", enabled: true },
   { label: "Projector",   href: "/projector",   enabled: true },
-  { label: "Assets",      href: "/assets",      enabled: false },
+  { label: "Assets",      href: "/assets",      enabled: true },
   { label: "Liabilities", href: "/liabilities", enabled: false },
   { label: "Goals",       href: "/goals",       enabled: false },
 ];
