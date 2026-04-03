@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { InvestmentType, Geography, Currency, TransactionType, AssetType, ValuationSource } from "@/generated/prisma/client";
+import { InvestmentType, Geography, Currency, TransactionType, AssetType, ValuationSource, LiabilityType } from "@/generated/prisma/client";
 
 export const InvestmentSchema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -71,3 +71,28 @@ export const ValuationEntrySchema = z.object({
 
 export type AssetInput = z.infer<typeof AssetSchema>;
 export type ValuationEntryInput = z.infer<typeof ValuationEntrySchema>;
+
+export const LiabilitySchema = z.object({
+  name: z.string().min(1, "Name is required"),
+  type: z.nativeEnum(LiabilityType),
+  currency: z.nativeEnum(Currency),
+  lender: z.string().min(1, "Lender is required"),
+  originalAmount: z.coerce.number().positive("Must be positive"),
+  outstandingBalance: z.coerce.number().min(0, "Must be non-negative"),
+  interestRate: z.coerce.number().min(0).optional(),
+  monthlyEMI: z.coerce.number().min(0).optional(),
+  startDate: z.coerce.date(),
+  endDate: z.coerce.date().optional(),
+  notes: z.string().optional(),
+});
+
+export const PaymentEntrySchema = z.object({
+  liabilityId: z.string().min(1),
+  date: z.coerce.date(),
+  amount: z.coerce.number(),         // negative = new charges
+  balanceAfter: z.coerce.number().min(0, "Balance must be non-negative"),
+  notes: z.string().optional(),
+});
+
+export type LiabilityInput = z.infer<typeof LiabilitySchema>;
+export type PaymentEntryInput = z.infer<typeof PaymentEntrySchema>;

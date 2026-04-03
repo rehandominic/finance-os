@@ -49,3 +49,14 @@ export const ValuationSource = {
   AUTO_INTEREST: "AUTO_INTEREST",
 } as const;
 export type ValuationSource = (typeof ValuationSource)[keyof typeof ValuationSource];
+
+export const LiabilityType = {
+  HOME_LOAN: "HOME_LOAN",
+  EDUCATION_LOAN: "EDUCATION_LOAN",
+  VEHICLE_LOAN: "VEHICLE_LOAN",
+  CREDIT_CARD: "CREDIT_CARD",
+  PERSONAL_LOAN: "PERSONAL_LOAN",
+  INFORMAL: "INFORMAL",
+  OTHER: "OTHER",
+} as const;
+export type LiabilityType = (typeof LiabilityType)[keyof typeof LiabilityType];

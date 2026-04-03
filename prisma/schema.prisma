@@ -130,3 +130,44 @@ enum ValuationSource {
   AUTO_DEPRECIATION
   AUTO_INTEREST
 }
+
+model Liability {
+  id                 String        @id @default(cuid())
+  name               String
+  type               LiabilityType
+  currency           Currency
+  lender             String
+  originalAmount     Float
+  outstandingBalance Float
+  interestRate       Float?
+  monthlyEMI         Float?
+  startDate          DateTime
+  endDate            DateTime?
+  notes              String?
+  createdAt          DateTime      @default(now())
+  updatedAt          DateTime      @updatedAt
+
+  payments PaymentEntry[]
+}
+
+model PaymentEntry {
+  id          String    @id @default(cuid())
+  liabilityId String
+  date        DateTime
+  amount      Float     // negative = new charges added (credit card)
+  balanceAfter Float
+  notes       String?
+  createdAt   DateTime  @default(now())
+
+  liability Liability @relation(fields: [liabilityId], references: [id], onDelete: Cascade)
+}
+
+enum LiabilityType {
+  HOME_LOAN
+  EDUCATION_LOAN
+  VEHICLE_LOAN
+  CREDIT_CARD
+  PERSONAL_LOAN
+  INFORMAL
+  OTHER
+}

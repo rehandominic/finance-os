@@ -1,4 +1,4 @@
-import { InvestmentType, Geography, Currency, TransactionType, AssetType, ValuationSource } from "@/lib/enums";
+import { InvestmentType, Geography, Currency, TransactionType, AssetType, ValuationSource, LiabilityType } from "@/lib/enums";
 
 export type SerializedTransaction = {
   id: string;
@@ -115,4 +115,67 @@ export const INVESTMENT_TYPE_COLORS: Record<InvestmentType, string> = {
   US_ETF: "bg-purple-500/15 text-purple-600 dark:text-purple-400",
   CRYPTO: "bg-amber-500/15 text-amber-600 dark:text-amber-400",
   PRIVATE: "bg-rose-500/15 text-rose-600 dark:text-rose-400",
+};
+
+// ─── Liability types ──────────────────────────────────────────────────────────
+
+export type SerializedPaymentEntry = {
+  id: string;
+  liabilityId: string;
+  date: string;
+  amount: number;      // negative = new charges (credit card)
+  balanceAfter: number;
+  notes: string | null;
+  createdAt: string;
+};
+
+export type LiabilityWithPayments = {
+  id: string;
+  name: string;
+  type: LiabilityType;
+  currency: Currency;
+  lender: string;
+  originalAmount: number;
+  outstandingBalance: number;
+  interestRate: number | null;
+  monthlyEMI: number | null;
+  startDate: string;
+  endDate: string | null;
+  notes: string | null;
+  createdAt: string;
+  updatedAt: string;
+  payments: SerializedPaymentEntry[];
+  // Computed
+  totalPaid: number;
+  paidPercent: number;
+};
+
+export const LIABILITY_TYPE_LABELS: Record<LiabilityType, string> = {
+  HOME_LOAN: "Home Loan",
+  EDUCATION_LOAN: "Education",
+  VEHICLE_LOAN: "Vehicle Loan",
+  CREDIT_CARD: "Credit Card",
+  PERSONAL_LOAN: "Personal Loan",
+  INFORMAL: "Informal",
+  OTHER: "Other",
+};
+
+export const LIABILITY_TYPE_COLORS: Record<LiabilityType, string> = {
+  HOME_LOAN: "bg-blue-500/15 text-blue-600 dark:text-blue-400",
+  EDUCATION_LOAN: "bg-violet-500/15 text-violet-600 dark:text-violet-400",
+  VEHICLE_LOAN: "bg-orange-500/15 text-orange-600 dark:text-orange-400",
+  CREDIT_CARD: "bg-rose-500/15 text-rose-600 dark:text-rose-400",
+  PERSONAL_LOAN: "bg-amber-500/15 text-amber-600 dark:text-amber-400",
+  INFORMAL: "bg-teal-500/15 text-teal-600 dark:text-teal-400",
+  OTHER: "bg-slate-500/15 text-slate-600 dark:text-slate-400",
+};
+
+export const LIABILITY_TYPE_CHART_COLORS: Record<LiabilityType, string> = {
+  HOME_LOAN: "#3b82f6",
+  EDUCATION_LOAN: "#8b5cf6",
+  VEHICLE_LOAN: "#f97316",
+  CREDIT_CARD: "#f43f5e",
+  PERSONAL_LOAN: "#f59e0b",
+  INFORMAL: "#14b8a6",
+  OTHER: "#64748b",
 };

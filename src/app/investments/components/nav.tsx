@@ -13,7 +13,7 @@ const NAV_LINKS = [
   { label: "Investments", href: "/investments", enabled: true },
   { label: "Projector",   href: "/projector",   enabled: true },
   { label: "Assets",      href: "/assets",      enabled: true },
-  { label: "Liabilities", href: "/liabilities", enabled: false },
+  { label: "Liabilities", href: "/liabilities", enabled: true },
   { label: "Goals",       href: "/goals",       enabled: false },
 ];
 
