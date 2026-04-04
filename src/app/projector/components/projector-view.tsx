@@ -54,6 +54,7 @@ interface Props {
 export function ProjectorView({ summary, monthlyInvesting, assetProjections }: Props) {
   const { totalValue, totalInvested, totalPnlPercent } = summary;
   const [stepUp, setStepUp] = useState(10);
+  const [currentAge, setCurrentAge] = useState<number | "">(30);
 
   const assetsTotal = assetProjections.reduce((s, a) => s + a.currentValue, 0);
   const assetsWithCagr = assetProjections.filter((a) => a.expectedCagr != null && a.expectedCagr > 0);
@@ -122,23 +123,45 @@ export function ProjectorView({ summary, monthlyInvesting, assetProjections }: P
         <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground" style={{ marginBottom: "16px" }}>
           Projection Settings
         </p>
-        <div style={{ display: "flex", alignItems: "center", gap: "16px", flexWrap: "wrap" }}>
-          <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-            <span className="text-sm font-medium text-foreground">Annual SIP Step-Up (%)</span>
-            <p className="text-xs text-muted-foreground">By how much your monthly investment grows each year</p>
+        <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "16px", flexWrap: "wrap" }}>
+            <div style={{ display: "flex", flexDirection: "column", gap: "4px", flex: 1, minWidth: "200px" }}>
+              <span className="text-sm font-medium text-foreground">Annual SIP Step-Up (%)</span>
+              <p className="text-xs text-muted-foreground">By how much your monthly investment grows each year</p>
+            </div>
+            <div style={{ display: "flex", alignItems: "center", gap: "8px", flexShrink: 0 }}>
+              <Input
+                type="number"
+                min="0"
+                max="50"
+                step="1"
+                value={stepUp}
+                onChange={(e) => setStepUp(Math.max(0, Math.min(50, Number(e.target.value) || 0)))}
+                className="h-9 font-mono text-sm"
+                style={{ width: "80px" }}
+              />
+              <span className="text-sm text-muted-foreground">% / year</span>
+            </div>
           </div>
-          <div style={{ display: "flex", alignItems: "center", gap: "8px", flexShrink: 0 }}>
-            <Input
-              type="number"
-              min="0"
-              max="50"
-              step="1"
-              value={stepUp}
-              onChange={(e) => setStepUp(Math.max(0, Math.min(50, Number(e.target.value) || 0)))}
-              className="h-9 font-mono text-sm"
-              style={{ width: "80px" }}
-            />
-            <span className="text-sm text-muted-foreground">% / year</span>
+          <div style={{ borderTop: "1px solid rgba(100,116,139,0.2)", paddingTop: "16px", display: "flex", alignItems: "center", gap: "16px", flexWrap: "wrap" }}>
+            <div style={{ display: "flex", flexDirection: "column", gap: "4px", flex: 1, minWidth: "200px" }}>
+              <span className="text-sm font-medium text-foreground">Your Age This Year</span>
+              <p className="text-xs text-muted-foreground">Shows your age at each year in the projection table</p>
+            </div>
+            <div style={{ display: "flex", alignItems: "center", gap: "8px", flexShrink: 0 }}>
+              <Input
+                type="number"
+                min="1"
+                max="100"
+                step="1"
+                value={currentAge}
+                onChange={(e) => setCurrentAge(e.target.value === "" ? "" : Math.max(1, Math.min(100, Number(e.target.value))))}
+                className="h-9 font-mono text-sm"
+                style={{ width: "80px" }}
+                placeholder="30"
+              />
+              <span className="text-sm text-muted-foreground">years old</span>
+            </div>
           </div>
         </div>
         {assetsTotal > 0 && assetsWithCagr.length < assetProjections.length && (
@@ -164,6 +187,7 @@ export function ProjectorView({ summary, monthlyInvesting, assetProjections }: P
           monthlyContrib={monthlyInvesting}
           stepUp={stepUp}
           assets={assetProjections}
+          currentAge={currentAge === "" ? null : currentAge}
         />
       </div>
 
@@ -191,6 +215,7 @@ export function ProjectorView({ summary, monthlyInvesting, assetProjections }: P
         monthlyContrib={monthlyInvesting}
         stepUp={stepUp}
         assets={assetProjections}
+        currentAge={currentAge === "" ? null : currentAge}
       />
 
       {/* ── Footnote ── */}

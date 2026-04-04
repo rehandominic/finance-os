@@ -87,9 +87,10 @@ interface Props {
   monthlyContrib: number;
   stepUp: number;
   assets: AssetProjection[];
+  currentAge: number | null;
 }
 
-export function GrowthMatrix({ portfolioValue, monthlyContrib, stepUp, assets }: Props) {
+export function GrowthMatrix({ portfolioValue, monthlyContrib, stepUp, assets, currentAge }: Props) {
   const [hovered, setHovered] = useState<{ row: number; col: number } | null>(null);
 
   const cardBg = "hsl(var(--card))";
@@ -160,11 +161,9 @@ export function GrowthMatrix({ portfolioValue, monthlyContrib, stepUp, assets }:
             {YEARS.map((year) => (
               <th key={year} style={colHeaderStyle}>
                 {year}
-                {year === CURRENT_YEAR && (
-                  <span style={{ display: "block", fontSize: "8px", fontWeight: 400, opacity: 0.55, marginTop: "1px" }}>
-                    now
-                  </span>
-                )}
+                <span style={{ display: "block", fontSize: "8px", fontWeight: 400, opacity: 0.55, marginTop: "1px" }}>
+                  {year === CURRENT_YEAR ? "now" : currentAge != null ? `age ${currentAge + (year - CURRENT_YEAR)}` : ""}
+                </span>
               </th>
             ))}
           </tr>

@@ -27,9 +27,10 @@ interface Props {
   monthlyContrib: number;
   stepUp: number;
   assets: AssetProjection[];
+  currentAge: number | null;
 }
 
-export function GrowthChart({ portfolioValue, monthlyContrib, stepUp, assets }: Props) {
+export function GrowthChart({ portfolioValue, monthlyContrib, stepUp, assets, currentAge }: Props) {
   const data = YEARS.map((year) => {
     const point: Record<string, number | string> = { year: String(year) };
     for (const rate of CHART_RATES) {
@@ -91,7 +92,24 @@ export function GrowthChart({ portfolioValue, monthlyContrib, stepUp, assets }: 
         <ResponsiveContainer width="100%" height={320}>
           <LineChart data={data} margin={{ top: 4, right: 16, bottom: 0, left: 8 }}>
             <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
-            <XAxis dataKey="year" tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }} tickLine={false} axisLine={false} />
+            <XAxis
+              dataKey="year"
+              tick={({ x, y, payload }) => {
+                const yr = Number(payload.value);
+                const age = currentAge != null ? currentAge + (yr - CURRENT_YEAR) : null;
+                return (
+                  <g transform={`translate(${x},${y})`}>
+                    <text x={0} y={0} dy={12} textAnchor="middle" fontSize={10} fill="hsl(var(--muted-foreground))">{yr}</text>
+                    {age != null && (
+                      <text x={0} y={0} dy={22} textAnchor="middle" fontSize={8} fill="hsl(var(--muted-foreground))" opacity={0.55}>{yr === CURRENT_YEAR ? "now" : `${age}`}</text>
+                    )}
+                  </g>
+                );
+              }}
+              tickLine={false}
+              axisLine={false}
+              height={currentAge != null ? 36 : 20}
+            />
             <YAxis tickFormatter={fmtAxis} tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }} tickLine={false} axisLine={false} width={58} />
             <Tooltip content={<CustomTooltip />} />
             <Legend
