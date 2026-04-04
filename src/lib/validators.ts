@@ -59,6 +59,8 @@ export const AssetSchema = z.object({
   interestRate: z.number().min(0).optional(),
   maturityDate: z.coerce.date().optional(),
   principal: z.number().positive().optional(),
+  // Projector
+  expectedCagr: z.number().min(0).max(100).optional(),
 });
 
 export const ValuationEntrySchema = z.object({

@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import { ChevronDown, ChevronRight, TrendingUp, Trash2 } from "lucide-react";
+import { ChevronDown, ChevronRight, TrendingUp, Trash2, Pencil } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { AssetWithValuations } from "@/lib/types";
 import { ASSET_TYPE_LABELS, ASSET_TYPE_COLORS } from "@/lib/types";
@@ -180,6 +180,15 @@ function ExpandedRow({
               >
                 <TrendingUp className="h-3.5 w-3.5" />
                 Update Value
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                className="gap-1.5"
+                onClick={() => router.push(`/assets/${asset.id}/edit`)}
+              >
+                <Pencil className="h-3.5 w-3.5" />
+                Edit
               </Button>
               <Button
                 variant="outline"

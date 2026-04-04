@@ -64,6 +64,7 @@ export type AssetWithValuations = {
   interestRate: number | null;
   maturityDate: string | null;
   principal: number | null;
+  expectedCagr: number | null;
   createdAt: string;
   updatedAt: string;
   valuations: SerializedValuationEntry[];

@@ -58,14 +58,15 @@ function Label({ children, optional }: { children: React.ReactNode; optional?: b
 }
 
 function Field({
-  label, optional, error, children,
+  label, optional, error, hint, children,
 }: {
-  label: string; optional?: boolean; error?: string; children: React.ReactNode;
+  label: string; optional?: boolean; error?: string; hint?: string; children: React.ReactNode;
 }) {
   return (
     <div className="flex flex-col gap-2">
       <Label optional={optional}>{label}</Label>
       {children}
+      {hint && !error && <p className="text-xs text-muted-foreground">{hint}</p>}
       {error && <p className="text-xs text-destructive">{error}</p>}
     </div>
   );
@@ -106,6 +107,8 @@ type FormState = {
   // Gold / Metals
   metalType: string;
   ratePerUnit: string;
+  // Projector
+  expectedCagr: string;
 };
 
 const DEFAULT_FORM: FormState = {
@@ -126,6 +129,7 @@ const DEFAULT_FORM: FormState = {
   maturityDate: "",
   metalType: "Gold 24K",
   ratePerUnit: "",
+  expectedCagr: "",
 };
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
@@ -196,6 +200,7 @@ export default function AddAssetPage() {
           if (form.interestRate)  payload.interestRate = Number(form.interestRate);
           if (form.maturityDate)  payload.maturityDate = new Date(form.maturityDate);
         }
+        if (form.expectedCagr) payload.expectedCagr = Number(form.expectedCagr);
 
         const result = await createAsset(payload);
         if (result.error) {
@@ -337,6 +342,19 @@ export default function AddAssetPage() {
             onChange={(e) => set("notes", e.target.value)}
             placeholder="Any notes about this asset"
             className="h-10"
+          />
+        </Field>
+
+        <Field label="Expected Annual Growth (% CAGR)" optional hint="Used in the Wealth Projector to compound this asset independently">
+          <Input
+            type="number"
+            min="0"
+            max="100"
+            step="0.1"
+            value={form.expectedCagr}
+            onChange={(e) => set("expectedCagr", e.target.value)}
+            placeholder="e.g. 8 for property, 7 for gold"
+            className="h-10 font-mono"
           />
         </Field>
       </SectionCard>

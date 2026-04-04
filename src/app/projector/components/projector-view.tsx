@@ -1,7 +1,9 @@
 "use client";
 
-import { Wallet, BarChart3 } from "lucide-react";
-import { GrowthMatrix } from "./growth-matrix";
+import { useState } from "react";
+import { Wallet, BarChart3, TrendingUp, Landmark } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { GrowthMatrix, type AssetProjection } from "./growth-matrix";
 import { GrowthChart } from "./growth-chart";
 
 interface Summary {
@@ -35,83 +37,139 @@ function StatCard({
     <div className="rounded-xl border bg-card" style={{ padding: "20px 24px" }}>
       <div className="flex items-center gap-2 mb-3">
         <Icon className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
-        <span className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
-          {label}
-        </span>
+        <span className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">{label}</span>
       </div>
-      <p className={`font-mono text-2xl font-semibold tracking-tight ${valueClass ?? ""}`}>
-        {value}
-      </p>
-      {sub && (
-        <p className="text-xs text-muted-foreground font-mono mt-1">{sub}</p>
-      )}
+      <p className={`font-mono text-2xl font-semibold tracking-tight ${valueClass ?? ""}`}>{value}</p>
+      {sub && <p className="text-xs text-muted-foreground font-mono mt-1">{sub}</p>}
     </div>
   );
 }
 
-export function ProjectorView({ summary }: { summary: Summary }) {
-  const { totalValue, totalInvested, totalPnlPercent } = summary;
+interface Props {
+  summary: Summary;
+  monthlyInvesting: number;
+  assetProjections: AssetProjection[];
+}
 
-  const portfolioFormatted = fmtCompact(totalValue);
-  const investedFormatted = fmtCompact(totalInvested);
+export function ProjectorView({ summary, monthlyInvesting, assetProjections }: Props) {
+  const { totalValue, totalInvested, totalPnlPercent } = summary;
+  const [stepUp, setStepUp] = useState(10);
+
+  const assetsTotal = assetProjections.reduce((s, a) => s + a.currentValue, 0);
+  const assetsWithCagr = assetProjections.filter((a) => a.expectedCagr != null && a.expectedCagr > 0);
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "32px" }}>
 
       {/* ── Page header ── */}
       <div style={{ maxWidth: "640px" }}>
-        <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-2">
-          Finance OS
-        </p>
-        <h1
-          className="font-semibold tracking-tight text-foreground"
-          style={{ fontSize: "28px", lineHeight: "1.2", marginBottom: "12px" }}
-        >
+        <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-2">Finance OS</p>
+        <h1 className="font-semibold tracking-tight text-foreground" style={{ fontSize: "28px", lineHeight: "1.2", marginBottom: "12px" }}>
           Wealth Projector
         </h1>
         <p className="text-muted-foreground" style={{ fontSize: "15px", lineHeight: "1.6" }}>
-          Your portfolio today —{" "}
-          <span className="font-mono font-semibold text-foreground">{portfolioFormatted}</span>{" "}
-          — projected across 20 years and 11 return scenarios. No new contributions assumed.
-          Just the math of money growing on money.
+          Your investment portfolio today —{" "}
+          <span className="font-mono font-semibold text-foreground">{fmtCompact(totalValue)}</span>
+          {assetsTotal > 0 && (
+            <>
+              {" "}plus{" "}
+              <span className="font-mono font-semibold text-foreground">{fmtCompact(assetsTotal)}</span>
+              {" "}in assets
+            </>
+          )}
+          {monthlyInvesting > 0 && (
+            <>
+              , with{" "}
+              <span className="font-mono font-semibold text-foreground">{fmtCompact(monthlyInvesting)}/mo</span>
+              {" "}in contributions stepping up {stepUp}%/yr
+            </>
+          )}
+          {" "}— projected across 20 years and 11 return scenarios.
         </p>
       </div>
 
-      {/* ── Stat bar (2 cards) ── */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4" style={{ maxWidth: "560px" }}>
+      {/* ── Stat bar ── */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
         <StatCard
-          icon={Wallet}
+          icon={TrendingUp}
           label="Portfolio Today"
-          value={portfolioFormatted}
-          sub="current market value"
+          value={fmtCompact(totalValue)}
+          sub="investments market value"
         />
         <StatCard
           icon={BarChart3}
           label="Total Invested"
-          value={investedFormatted}
+          value={fmtCompact(totalInvested)}
           sub={`${totalPnlPercent >= 0 ? "+" : ""}${totalPnlPercent.toFixed(1)}% total return`}
+        />
+        <StatCard
+          icon={Wallet}
+          label="Monthly SIP"
+          value={monthlyInvesting > 0 ? fmtCompact(monthlyInvesting) : "—"}
+          sub="from cash flow plan"
+          valueClass={monthlyInvesting > 0 ? "text-emerald-600 dark:text-emerald-400" : undefined}
+        />
+        <StatCard
+          icon={Landmark}
+          label="Assets"
+          value={assetsTotal > 0 ? fmtCompact(assetsTotal) : "—"}
+          sub={assetsWithCagr.length > 0 ? `${assetsWithCagr.length} with CAGR set` : "no CAGR set"}
         />
       </div>
 
-      {/* ── Matrix section ── */}
+      {/* ── Assumptions ── */}
+      <div className="rounded-xl border bg-card" style={{ padding: "20px 24px" }}>
+        <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground" style={{ marginBottom: "16px" }}>
+          Projection Settings
+        </p>
+        <div style={{ display: "flex", alignItems: "center", gap: "16px", flexWrap: "wrap" }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+            <span className="text-sm font-medium text-foreground">Annual SIP Step-Up (%)</span>
+            <p className="text-xs text-muted-foreground">By how much your monthly investment grows each year</p>
+          </div>
+          <div style={{ display: "flex", alignItems: "center", gap: "8px", flexShrink: 0 }}>
+            <Input
+              type="number"
+              min="0"
+              max="50"
+              step="1"
+              value={stepUp}
+              onChange={(e) => setStepUp(Math.max(0, Math.min(50, Number(e.target.value) || 0)))}
+              className="h-9 font-mono text-sm"
+              style={{ width: "80px" }}
+            />
+            <span className="text-sm text-muted-foreground">% / year</span>
+          </div>
+        </div>
+        {assetsTotal > 0 && assetsWithCagr.length < assetProjections.length && (
+          <p className="text-xs text-muted-foreground" style={{ marginTop: "12px" }}>
+            {assetProjections.length - assetsWithCagr.length} asset{assetProjections.length - assetsWithCagr.length !== 1 ? "s" : ""} have no CAGR set — they are included at today&apos;s value with 0% growth. Set a CAGR on the Assets page to project them.
+          </p>
+        )}
+      </div>
+
+      {/* ── Matrix ── */}
       <div>
         <div style={{ marginBottom: "16px" }}>
           <h2 className="text-sm font-semibold text-foreground" style={{ marginBottom: "4px" }}>
             Compound Growth Matrix
           </h2>
           <p className="text-xs text-muted-foreground">
-            Each cell shows projected wealth at that CAGR over that many years.
-            Darker green = stronger compounding effect.
+            Each cell = investments compounding at that CAGR (with contributions) + assets at their own rates.
+            Multiples relative to combined portfolio today.
           </p>
         </div>
-        <GrowthMatrix portfolioValue={totalValue} />
+        <GrowthMatrix
+          portfolioValue={totalValue}
+          monthlyContrib={monthlyInvesting}
+          stepUp={stepUp}
+          assets={assetProjections}
+        />
       </div>
 
       {/* ── Colour legend ── */}
       <div className="flex flex-wrap items-center gap-3">
-        <span className="text-xs text-muted-foreground font-medium uppercase tracking-wider">
-          Multiple of today:
-        </span>
+        <span className="text-xs text-muted-foreground font-medium uppercase tracking-wider">Multiple of today:</span>
         {[
           { label: "1×",   bg: "rgba(16,185,129,0.04)" },
           { label: "1.5×", bg: "rgba(16,185,129,0.13)" },
@@ -121,26 +179,25 @@ export function ProjectorView({ summary }: { summary: Summary }) {
           { label: "8×+",  bg: "rgba(16,185,129,0.64)" },
         ].map(({ label, bg }) => (
           <div key={label} className="flex items-center gap-1.5">
-            <span
-              className="inline-block rounded"
-              style={{ width: "20px", height: "14px", backgroundColor: bg, border: "1px solid hsl(var(--border))" }}
-            />
+            <span className="inline-block rounded" style={{ width: "20px", height: "14px", backgroundColor: bg, border: "1px solid rgba(100,116,139,0.2)" }} />
             <span className="text-xs text-muted-foreground font-mono">{label}</span>
           </div>
         ))}
       </div>
 
       {/* ── Line charts ── */}
-      <GrowthChart portfolioValue={totalValue} />
+      <GrowthChart
+        portfolioValue={totalValue}
+        monthlyContrib={monthlyInvesting}
+        stepUp={stepUp}
+        assets={assetProjections}
+      />
 
       {/* ── Footnote ── */}
-      <p
-        className="text-xs text-muted-foreground border-t"
-        style={{ paddingTop: "16px" }}
-      >
-        * Projections use the current portfolio value as the starting point. No new contributions,
-        withdrawals, or dividend reinvestment are modelled. Returns are compounded annually.
-        Past performance is not indicative of future results. All values in INR.
+      <p className="text-xs text-muted-foreground border-t" style={{ paddingTop: "16px" }}>
+        * Investment projections use the current portfolio value as base, compounding at each scenario CAGR with monthly contributions stepping up {stepUp}% per year.
+        Asset projections use each asset&apos;s individually set CAGR (0% if not set), compounded independently.
+        Returns are compounded annually. No withdrawals or tax modelled. All values in INR.
       </p>
 
     </div>

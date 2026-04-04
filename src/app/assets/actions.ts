@@ -43,6 +43,7 @@ function serializeAsset(asset: Awaited<ReturnType<typeof prisma.asset.findMany>>
     interestRate: asset.interestRate,
     maturityDate: asset.maturityDate ? asset.maturityDate.toISOString() : null,
     principal: asset.principal,
+    expectedCagr: asset.expectedCagr,
     createdAt: asset.createdAt.toISOString(),
     updatedAt: asset.updatedAt.toISOString(),
     valuations: asset.valuations.map((v) => ({
@@ -142,6 +143,7 @@ export async function createAsset(data: unknown) {
       interestRate: d.interestRate,
       maturityDate: d.maturityDate,
       principal: d.principal,
+      expectedCagr: d.expectedCagr,
       valuations: {
         create: {
           date: d.purchaseDate,

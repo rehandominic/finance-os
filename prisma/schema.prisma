@@ -64,6 +64,9 @@ model Asset {
   maturityDate DateTime?
   principal    Float?
 
+  // Projector
+  expectedCagr Float?   // expected annual growth % for wealth projector
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 

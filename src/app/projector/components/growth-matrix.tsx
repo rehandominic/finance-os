@@ -2,14 +2,59 @@
 
 import React, { useState } from "react";
 
-const CURRENT_YEAR = new Date().getFullYear();
-// 11 columns: current year + 10 two-year steps → covers 20 years (2026 → 2046)
-const YEARS = Array.from({ length: 11 }, (_, i) => CURRENT_YEAR + i * 2);
+export const CURRENT_YEAR = new Date().getFullYear();
+// 11 columns: current year + 10 two-year steps → covers 20 years
+export const YEARS = Array.from({ length: 11 }, (_, i) => CURRENT_YEAR + i * 2);
 // 11 rows: 5% → 25% in 2% steps
-const RATES = [5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 25];
+export const RATES = [5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 25];
 
-export function projectValue(base: number, rate: number, year: number): number {
-  return base * Math.pow(1 + rate / 100, year - CURRENT_YEAR);
+export type AssetProjection = {
+  id: string;
+  name: string;
+  currentValue: number;
+  expectedCagr: number | null;
+};
+
+/** Compound assets independently at their own CAGRs */
+export function projectAssets(assets: AssetProjection[], yearsAhead: number): number {
+  return assets.reduce((sum, a) => {
+    const cagr = a.expectedCagr ?? 0;
+    return sum + a.currentValue * Math.pow(1 + cagr / 100, yearsAhead);
+  }, 0);
+}
+
+/** Investment portfolio with annual contributions + yearly step-up */
+export function projectInvestments(
+  base: number,
+  ratePercent: number,
+  yearsAhead: number,
+  monthlyContrib: number,
+  stepUpPercent: number,
+): number {
+  if (yearsAhead === 0) return base;
+  let value = base;
+  let annualContrib = monthlyContrib * 12;
+  for (let y = 1; y <= yearsAhead; y++) {
+    value = value * (1 + ratePercent / 100) + annualContrib;
+    annualContrib = annualContrib * (1 + stepUpPercent / 100);
+  }
+  return value;
+}
+
+/** Combined: investments (at scenario rate) + assets (at their own rates) */
+export function projectValue(
+  investmentsBase: number,
+  rate: number,
+  year: number,
+  monthlyContrib: number,
+  stepUp: number,
+  assets: AssetProjection[],
+): number {
+  const yearsAhead = year - CURRENT_YEAR;
+  return (
+    projectInvestments(investmentsBase, rate, yearsAhead, monthlyContrib, stepUp) +
+    projectAssets(assets, yearsAhead)
+  );
 }
 
 export function fmtCompact(v: number): string {
@@ -39,17 +84,22 @@ function cellTextClass(multiple: number): string {
 
 interface Props {
   portfolioValue: number;
+  monthlyContrib: number;
+  stepUp: number;
+  assets: AssetProjection[];
 }
 
-export function GrowthMatrix({ portfolioValue }: Props) {
+export function GrowthMatrix({ portfolioValue, monthlyContrib, stepUp, assets }: Props) {
   const [hovered, setHovered] = useState<{ row: number; col: number } | null>(null);
 
   const cardBg = "hsl(var(--card))";
   const borderColor = "hsl(var(--border))";
-
-  // Compact padding so all 11 cols fit without horizontal scroll on desktop
   const CELL_PAD = "7px 10px";
   const HEADER_PAD = "8px 10px";
+
+  // Base value = investments + assets at year 0
+  const assetsCurrentTotal = assets.reduce((s, a) => s + a.currentValue, 0);
+  const baseTotal = portfolioValue + assetsCurrentTotal;
 
   const thStyle: React.CSSProperties = {
     padding: HEADER_PAD,
@@ -100,15 +150,8 @@ export function GrowthMatrix({ portfolioValue }: Props) {
   });
 
   return (
-    <div
-      style={{
-        overflowX: "auto",
-        borderRadius: "0.75rem",
-        border: `1px solid ${borderColor}`,
-      }}
-    >
+    <div style={{ overflowX: "auto", borderRadius: "0.75rem", border: `1px solid ${borderColor}` }}>
       <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "12px" }}>
-        {/* ── Header row: years ── */}
         <thead>
           <tr>
             <th style={cornerStyle}>
@@ -126,16 +169,13 @@ export function GrowthMatrix({ portfolioValue }: Props) {
             ))}
           </tr>
         </thead>
-
-        {/* ── Body rows ── */}
         <tbody>
           {RATES.map((rate, ri) => (
             <tr key={rate}>
               <td style={rowHeaderStyle(ri)}>{rate}%</td>
-
               {YEARS.map((year, ci) => {
-                const value = projectValue(portfolioValue, rate, year);
-                const multiple = portfolioValue > 0 ? value / portfolioValue : 1;
+                const value = projectValue(portfolioValue, rate, year, monthlyContrib, stepUp, assets);
+                const multiple = baseTotal > 0 ? value / baseTotal : 1;
                 const isHovered = hovered?.row === ri && hovered?.col === ci;
                 const isCurrentYear = year === CURRENT_YEAR;
 
@@ -185,5 +225,3 @@ export function GrowthMatrix({ portfolioValue }: Props) {
     </div>
   );
 }
-
-export { YEARS, RATES, CURRENT_YEAR };
