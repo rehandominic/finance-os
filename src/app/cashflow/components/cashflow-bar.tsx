@@ -91,6 +91,9 @@ export function CashflowBar({ incomeSources, buckets, toDisplay, fmtCompact }: P
             <div style={{
               flex: 1,
               backgroundColor: "hsl(var(--muted))",
+              backgroundImage: "repeating-linear-gradient(135deg, rgba(100,116,139,0.15) 0px, rgba(100,116,139,0.15) 1px, transparent 1px, transparent 8px)",
+              outline: "1px solid rgba(100,116,139,0.2)",
+              outlineOffset: "-1px",
               opacity: hoveredId !== null ? 0.55 : 1,
             }} />
           )}

@@ -111,43 +111,43 @@ function BucketSection({
       </div>
 
       {sectionBuckets.length === 0 ? (
-        <p className="text-xs text-muted-foreground" style={{ paddingLeft: "20px" }}>
+        <p className="text-xs text-muted-foreground" style={{ paddingTop: "4px" }}>
           No {label.toLowerCase()} added yet
         </p>
       ) : (
-        <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
-          {sectionBuckets.map((b) => (
+        <div style={{ borderTop: "1px solid rgba(100,116,139,0.2)", marginTop: "4px" }}>
+          {sectionBuckets.map((b, i) => (
             <div
               key={b.id}
               style={{
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "space-between",
-                padding: "8px 12px",
-                borderRadius: "8px",
-                backgroundColor: "hsl(var(--muted)/0.4)",
-                border: "1px solid hsl(var(--border))",
+                padding: "10px 4px",
+                borderBottom: i < sectionBuckets.length - 1 ? "1px solid rgba(100,116,139,0.2)" : "none",
               }}
             >
-              <div style={{ display: "flex", alignItems: "center", gap: "8px", minWidth: 0 }}>
-                <span style={{ width: "6px", height: "6px", borderRadius: "50%", backgroundColor: b.color ?? dotColor, flexShrink: 0 }} />
-                <span className="text-sm font-medium text-foreground" style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                  {b.name}
-                </span>
-                {b.notes && (
-                  <span className="text-xs text-muted-foreground" style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                    · {b.notes}
+              <div style={{ display: "flex", alignItems: "center", gap: "10px", minWidth: 0 }}>
+                <span style={{ width: "4px", height: "4px", borderRadius: "50%", backgroundColor: "rgba(100,116,139,0.35)", flexShrink: 0 }} />
+                <div style={{ minWidth: 0 }}>
+                  <span className="text-sm font-medium text-foreground" style={{ display: "block", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                    {b.name}
                   </span>
-                )}
+                  {b.notes && (
+                    <span className="text-xs text-muted-foreground" style={{ display: "block", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", marginTop: "1px" }}>
+                      {b.notes}
+                    </span>
+                  )}
+                </div>
               </div>
               <div style={{ display: "flex", alignItems: "center", gap: "12px", flexShrink: 0 }}>
                 <span className="font-mono text-sm font-semibold text-foreground">
                   {fmtCompact(b.amount, b.currency as Currency)}
                 </span>
-                <div style={{ display: "flex", gap: "4px" }}>
+                <div style={{ display: "flex", gap: "2px" }}>
                   <button
                     onClick={() => router.push(`/cashflow/bucket/${b.id}/edit`)}
-                    style={{ background: "none", border: "none", cursor: "pointer", padding: "2px", opacity: 0.6 }}
+                    style={{ background: "none", border: "none", cursor: "pointer", padding: "4px", opacity: 0.5 }}
                     className="hover:opacity-100 transition-opacity"
                   >
                     <Pencil className="h-3.5 w-3.5 text-muted-foreground" />
@@ -160,7 +160,7 @@ function BucketSection({
                       setDeletingId(null);
                     }}
                     disabled={deletingId === b.id}
-                    style={{ background: "none", border: "none", cursor: "pointer", padding: "2px", opacity: deletingId === b.id ? 0.3 : 0.6 }}
+                    style={{ background: "none", border: "none", cursor: "pointer", padding: "4px", opacity: deletingId === b.id ? 0.3 : 0.5 }}
                     className="hover:opacity-100 transition-opacity"
                   >
                     <Trash2 className="h-3.5 w-3.5 text-muted-foreground" />
@@ -220,43 +220,43 @@ function IncomeSection({
       </div>
 
       {incomeSources.length === 0 ? (
-        <p className="text-xs text-muted-foreground" style={{ paddingLeft: "20px" }}>
+        <p className="text-xs text-muted-foreground" style={{ paddingTop: "4px" }}>
           Add your first income source to start planning
         </p>
       ) : (
-        <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
-          {incomeSources.map((src) => (
+        <div style={{ borderTop: "1px solid rgba(100,116,139,0.2)", marginTop: "4px" }}>
+          {incomeSources.map((src, i) => (
             <div
               key={src.id}
               style={{
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "space-between",
-                padding: "8px 12px",
-                borderRadius: "8px",
-                backgroundColor: "hsl(var(--muted)/0.4)",
-                border: "1px solid hsl(var(--border))",
+                padding: "10px 4px",
+                borderBottom: i < incomeSources.length - 1 ? "1px solid rgba(100,116,139,0.2)" : "none",
               }}
             >
-              <div style={{ display: "flex", alignItems: "center", gap: "8px", minWidth: 0 }}>
-                <span style={{ width: "6px", height: "6px", borderRadius: "50%", backgroundColor: "#22c55e", flexShrink: 0 }} />
-                <span className="text-sm font-medium text-foreground" style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                  {src.name}
-                </span>
-                {src.notes && (
-                  <span className="text-xs text-muted-foreground" style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                    · {src.notes}
+              <div style={{ display: "flex", alignItems: "center", gap: "10px", minWidth: 0 }}>
+                <span style={{ width: "4px", height: "4px", borderRadius: "50%", backgroundColor: "rgba(100,116,139,0.35)", flexShrink: 0 }} />
+                <div style={{ minWidth: 0 }}>
+                  <span className="text-sm font-medium text-foreground" style={{ display: "block", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                    {src.name}
                   </span>
-                )}
+                  {src.notes && (
+                    <span className="text-xs text-muted-foreground" style={{ display: "block", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", marginTop: "1px" }}>
+                      {src.notes}
+                    </span>
+                  )}
+                </div>
               </div>
               <div style={{ display: "flex", alignItems: "center", gap: "12px", flexShrink: 0 }}>
                 <span className="font-mono text-sm font-semibold text-emerald-600 dark:text-emerald-400">
                   +{fmtCompact(src.amount, src.currency as Currency)}
                 </span>
-                <div style={{ display: "flex", gap: "4px" }}>
+                <div style={{ display: "flex", gap: "2px" }}>
                   <button
                     onClick={() => router.push(`/cashflow/income/${src.id}/edit`)}
-                    style={{ background: "none", border: "none", cursor: "pointer", padding: "2px", opacity: 0.6 }}
+                    style={{ background: "none", border: "none", cursor: "pointer", padding: "4px", opacity: 0.5 }}
                     className="hover:opacity-100 transition-opacity"
                   >
                     <Pencil className="h-3.5 w-3.5 text-muted-foreground" />
@@ -269,7 +269,7 @@ function IncomeSection({
                       setDeletingId(null);
                     }}
                     disabled={deletingId === src.id}
-                    style={{ background: "none", border: "none", cursor: "pointer", padding: "2px", opacity: deletingId === src.id ? 0.3 : 0.6 }}
+                    style={{ background: "none", border: "none", cursor: "pointer", padding: "4px", opacity: deletingId === src.id ? 0.3 : 0.5 }}
                     className="hover:opacity-100 transition-opacity"
                   >
                     <Trash2 className="h-3.5 w-3.5 text-muted-foreground" />
@@ -421,16 +421,28 @@ export function CashflowView({ initialIncomeSources, initialBudgetBuckets }: Pro
         fmtCompact={fmtCompactDisplay}
       />
 
-      {/* ── Sections ── */}
-      <IncomeSection
-        incomeSources={incomeSources}
-        onDelete={handleDeleteIncome}
-        fmtCompact={fmtCompact}
-        router={router}
-      />
+      {/* ── Income section ── */}
+      <div>
+        <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "16px" }}>
+          <span className="text-xs font-semibold uppercase tracking-widest text-muted-foreground" style={{ whiteSpace: "nowrap" }}>Income</span>
+          <div className="border-t border-border" style={{ flex: 1 }} />
+        </div>
+        <IncomeSection
+          incomeSources={incomeSources}
+          onDelete={handleDeleteIncome}
+          fmtCompact={fmtCompact}
+          router={router}
+        />
+      </div>
+
+      {/* ── Allocation section divider ── */}
+      <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+        <span className="text-xs font-semibold uppercase tracking-widest text-muted-foreground" style={{ whiteSpace: "nowrap" }}>Allocation</span>
+        <div className="border-t border-border" style={{ flex: 1 }} />
+      </div>
 
       {/* EMI section with Import button */}
-      <div style={{ display: "flex", flexDirection: "column", gap: "0" }}>
+      <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
         <BucketSection
           type={BucketType.EMI}
           label="EMIs"
@@ -441,7 +453,7 @@ export function CashflowView({ initialIncomeSources, initialBudgetBuckets }: Pro
           fmtCompact={fmtCompact}
           router={router}
         />
-        <div style={{ marginTop: "8px", paddingLeft: "2px" }}>
+        <div>
           <Button
             variant="outline"
             size="sm"
