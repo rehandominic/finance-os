@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Wallet, BarChart3, TrendingUp, Landmark } from "lucide-react";
+import { Wallet, BarChart3, TrendingUp, Landmark, Settings2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { GrowthMatrix, type AssetProjection } from "./growth-matrix";
 import { GrowthChart } from "./growth-chart";
@@ -118,57 +118,19 @@ export function ProjectorView({ summary, monthlyInvesting, assetProjections }: P
         />
       </div>
 
-      {/* ── Assumptions ── */}
-      <div className="rounded-xl border bg-card" style={{ padding: "20px 24px" }}>
-        <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground" style={{ marginBottom: "16px" }}>
-          Projection Settings
-        </p>
-        <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "16px", flexWrap: "wrap" }}>
-            <div style={{ display: "flex", flexDirection: "column", gap: "4px", flex: 1, minWidth: "200px" }}>
-              <span className="text-sm font-medium text-foreground">Annual SIP Step-Up (%)</span>
-              <p className="text-xs text-muted-foreground">By how much your monthly investment grows each year</p>
-            </div>
-            <div style={{ display: "flex", alignItems: "center", gap: "8px", flexShrink: 0 }}>
-              <Input
-                type="number"
-                min="0"
-                max="50"
-                step="1"
-                value={stepUp}
-                onChange={(e) => setStepUp(Math.max(0, Math.min(50, Number(e.target.value) || 0)))}
-                className="h-9 font-mono text-sm"
-                style={{ width: "80px" }}
-              />
-              <span className="text-sm text-muted-foreground">% / year</span>
-            </div>
-          </div>
-          <div style={{ borderTop: "1px solid rgba(100,116,139,0.2)", paddingTop: "16px", display: "flex", alignItems: "center", gap: "16px", flexWrap: "wrap" }}>
-            <div style={{ display: "flex", flexDirection: "column", gap: "4px", flex: 1, minWidth: "200px" }}>
-              <span className="text-sm font-medium text-foreground">Your Age This Year</span>
-              <p className="text-xs text-muted-foreground">Shows your age at each year in the projection table</p>
-            </div>
-            <div style={{ display: "flex", alignItems: "center", gap: "8px", flexShrink: 0 }}>
-              <Input
-                type="number"
-                min="1"
-                max="100"
-                step="1"
-                value={currentAge}
-                onChange={(e) => setCurrentAge(e.target.value === "" ? "" : Math.max(1, Math.min(100, Number(e.target.value))))}
-                className="h-9 font-mono text-sm"
-                style={{ width: "80px" }}
-                placeholder="30"
-              />
-              <span className="text-sm text-muted-foreground">years old</span>
-            </div>
-          </div>
-        </div>
-        {assetsTotal > 0 && assetsWithCagr.length < assetProjections.length && (
-          <p className="text-xs text-muted-foreground" style={{ marginTop: "12px" }}>
-            {assetProjections.length - assetsWithCagr.length} asset{assetProjections.length - assetsWithCagr.length !== 1 ? "s" : ""} have no CAGR set — they are included at today&apos;s value with 0% growth. Set a CAGR on the Assets page to project them.
-          </p>
-        )}
+      {/* ── Settings nudge ── */}
+      <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+        <Settings2 className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
+        <span className="text-xs text-muted-foreground">
+          Projections use a {stepUp}% annual SIP step-up{currentAge !== "" ? ` · age ${currentAge} in ${new Date().getFullYear()}` : ""} — adjust in{" "}
+          <button
+            onClick={() => document.getElementById("projection-settings")?.scrollIntoView({ behavior: "smooth" })}
+            className="underline underline-offset-2 hover:text-foreground transition-colors"
+            style={{ background: "none", border: "none", cursor: "pointer", padding: 0, fontSize: "inherit" }}
+          >
+            Projection Settings
+          </button>{" "}below.
+        </span>
       </div>
 
       {/* ── Matrix ── */}
@@ -217,6 +179,59 @@ export function ProjectorView({ summary, monthlyInvesting, assetProjections }: P
         assets={assetProjections}
         currentAge={currentAge === "" ? null : currentAge}
       />
+
+      {/* ── Projection Settings ── */}
+      <div id="projection-settings" className="rounded-xl border bg-card" style={{ padding: "20px 24px" }}>
+        <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground" style={{ marginBottom: "16px" }}>
+          Projection Settings
+        </p>
+        <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "16px", flexWrap: "wrap" }}>
+            <div style={{ display: "flex", flexDirection: "column", gap: "4px", flex: 1, minWidth: "200px" }}>
+              <span className="text-sm font-medium text-foreground">Annual SIP Step-Up (%)</span>
+              <p className="text-xs text-muted-foreground">By how much your monthly investment grows each year</p>
+            </div>
+            <div style={{ display: "flex", alignItems: "center", gap: "8px", flexShrink: 0 }}>
+              <Input
+                type="number"
+                min="0"
+                max="50"
+                step="1"
+                value={stepUp}
+                onChange={(e) => setStepUp(Math.max(0, Math.min(50, Number(e.target.value) || 0)))}
+                className="h-9 font-mono text-sm"
+                style={{ width: "80px" }}
+              />
+              <span className="text-sm text-muted-foreground">% / year</span>
+            </div>
+          </div>
+          <div style={{ borderTop: "1px solid rgba(100,116,139,0.2)", paddingTop: "16px", display: "flex", alignItems: "center", gap: "16px", flexWrap: "wrap" }}>
+            <div style={{ display: "flex", flexDirection: "column", gap: "4px", flex: 1, minWidth: "200px" }}>
+              <span className="text-sm font-medium text-foreground">Your Age This Year</span>
+              <p className="text-xs text-muted-foreground">Shows your age at each year in the projection table and chart</p>
+            </div>
+            <div style={{ display: "flex", alignItems: "center", gap: "8px", flexShrink: 0 }}>
+              <Input
+                type="number"
+                min="1"
+                max="100"
+                step="1"
+                value={currentAge}
+                onChange={(e) => setCurrentAge(e.target.value === "" ? "" : Math.max(1, Math.min(100, Number(e.target.value))))}
+                className="h-9 font-mono text-sm"
+                style={{ width: "80px" }}
+                placeholder="30"
+              />
+              <span className="text-sm text-muted-foreground">years old</span>
+            </div>
+          </div>
+        </div>
+        {assetsTotal > 0 && assetsWithCagr.length < assetProjections.length && (
+          <p className="text-xs text-muted-foreground" style={{ marginTop: "12px" }}>
+            {assetProjections.length - assetsWithCagr.length} asset{assetProjections.length - assetsWithCagr.length !== 1 ? "s" : ""} have no CAGR set — included at today&apos;s value with 0% growth. Set a CAGR on the Assets page to project them.
+          </p>
+        )}
+      </div>
 
       {/* ── Footnote ── */}
       <p className="text-xs text-muted-foreground border-t" style={{ paddingTop: "16px" }}>
