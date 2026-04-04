@@ -1,8 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Wallet, BarChart3, TrendingUp, Landmark, Settings2 } from "lucide-react";
+import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import { GrowthMatrix, type AssetProjection } from "./growth-matrix";
 import { GrowthChart } from "./growth-chart";
 
@@ -55,6 +57,22 @@ export function ProjectorView({ summary, monthlyInvesting, assetProjections }: P
   const { totalValue, totalInvested, totalPnlPercent } = summary;
   const [stepUp, setStepUp] = useState(10);
   const [currentAge, setCurrentAge] = useState<number | "">(30);
+
+  useEffect(() => {
+    const saved = localStorage.getItem("projector-settings");
+    if (saved) {
+      try {
+        const { stepUp: s, currentAge: a } = JSON.parse(saved);
+        if (typeof s === "number") setStepUp(s);
+        if (typeof a === "number" || a === "") setCurrentAge(a);
+      } catch {}
+    }
+  }, []);
+
+  function saveSettings() {
+    localStorage.setItem("projector-settings", JSON.stringify({ stepUp, currentAge }));
+    toast.success("Projection settings saved");
+  }
 
   const assetsTotal = assetProjections.reduce((s, a) => s + a.currentValue, 0);
   const assetsWithCagr = assetProjections.filter((a) => a.expectedCagr != null && a.expectedCagr > 0);
@@ -231,6 +249,9 @@ export function ProjectorView({ summary, monthlyInvesting, assetProjections }: P
             {assetProjections.length - assetsWithCagr.length} asset{assetProjections.length - assetsWithCagr.length !== 1 ? "s" : ""} have no CAGR set — included at today&apos;s value with 0% growth. Set a CAGR on the Assets page to project them.
           </p>
         )}
+        <div style={{ borderTop: "1px solid rgba(100,116,139,0.2)", marginTop: "20px", paddingTop: "16px" }}>
+          <Button size="sm" onClick={saveSettings}>Save Settings</Button>
+        </div>
       </div>
 
       {/* ── Footnote ── */}
