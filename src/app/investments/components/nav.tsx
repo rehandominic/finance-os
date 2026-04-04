@@ -14,6 +14,7 @@ const NAV_LINKS = [
   { label: "Projector",   href: "/projector",   enabled: true },
   { label: "Assets",      href: "/assets",      enabled: true },
   { label: "Liabilities", href: "/liabilities", enabled: true },
+  { label: "Cash Flow",   href: "/cashflow",    enabled: true },
   { label: "Goals",       href: "/goals",       enabled: false },
 ];
 

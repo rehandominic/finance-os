@@ -60,3 +60,14 @@ export const LiabilityType = {
   OTHER: "OTHER",
 } as const;
 export type LiabilityType = (typeof LiabilityType)[keyof typeof LiabilityType];
+
+export const BucketType = {
+  RECURRING_EXPENSE: "RECURRING_EXPENSE",
+  EMI: "EMI",
+  INVESTING: "INVESTING",
+  SAVINGS: "SAVINGS",
+  ESSENTIAL: "ESSENTIAL",
+  DISCRETIONARY: "DISCRETIONARY",
+  OTHER: "OTHER",
+} as const;
+export type BucketType = (typeof BucketType)[keyof typeof BucketType];

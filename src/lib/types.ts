@@ -1,4 +1,4 @@
-import { InvestmentType, Geography, Currency, TransactionType, AssetType, ValuationSource, LiabilityType } from "@/lib/enums";
+import { InvestmentType, Geography, Currency, TransactionType, AssetType, ValuationSource, LiabilityType, BucketType } from "@/lib/enums";
 
 export type SerializedTransaction = {
   id: string;
@@ -178,4 +178,59 @@ export const LIABILITY_TYPE_CHART_COLORS: Record<LiabilityType, string> = {
   PERSONAL_LOAN: "#f59e0b",
   INFORMAL: "#14b8a6",
   OTHER: "#64748b",
+};
+
+// ─── Cash Flow types ──────────────────────────────────────────────────────────
+
+export type SerializedIncomeSource = {
+  id: string;
+  name: string;
+  amount: number;
+  currency: Currency;
+  notes: string | null;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type SerializedBudgetBucket = {
+  id: string;
+  name: string;
+  type: BucketType;
+  amount: number;
+  currency: Currency;
+  color: string | null;
+  order: number;
+  notes: string | null;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export const BUCKET_TYPE_LABELS: Record<BucketType, string> = {
+  RECURRING_EXPENSE: "Recurring Expense",
+  EMI: "EMI",
+  INVESTING: "Investing",
+  SAVINGS: "Savings",
+  ESSENTIAL: "Essential",
+  DISCRETIONARY: "Discretionary",
+  OTHER: "Other",
+};
+
+export const BUCKET_TYPE_BADGE_COLORS: Record<BucketType, string> = {
+  RECURRING_EXPENSE: "bg-orange-500/15 text-orange-600 dark:text-orange-400",
+  EMI:               "bg-rose-500/15 text-rose-600 dark:text-rose-400",
+  INVESTING:         "bg-violet-500/15 text-violet-600 dark:text-violet-400",
+  SAVINGS:           "bg-blue-500/15 text-blue-600 dark:text-blue-400",
+  ESSENTIAL:         "bg-amber-500/15 text-amber-600 dark:text-amber-400",
+  DISCRETIONARY:     "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400",
+  OTHER:             "bg-slate-500/15 text-slate-600 dark:text-slate-400",
+};
+
+export const BUCKET_TYPE_CHART_COLORS: Record<BucketType, string> = {
+  RECURRING_EXPENSE: "#f97316",
+  EMI:               "#f43f5e",
+  INVESTING:         "#8b5cf6",
+  SAVINGS:           "#3b82f6",
+  ESSENTIAL:         "#f59e0b",
+  DISCRETIONARY:     "#10b981",
+  OTHER:             "#64748b",
 };

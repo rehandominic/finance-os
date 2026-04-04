@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { InvestmentType, Geography, Currency, TransactionType, AssetType, ValuationSource, LiabilityType } from "@/generated/prisma/client";
+import { InvestmentType, Geography, Currency, TransactionType, AssetType, ValuationSource, LiabilityType, BucketType } from "@/generated/prisma/client";
 
 export const InvestmentSchema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -96,3 +96,23 @@ export const PaymentEntrySchema = z.object({
 
 export type LiabilityInput = z.infer<typeof LiabilitySchema>;
 export type PaymentEntryInput = z.infer<typeof PaymentEntrySchema>;
+
+export const IncomeSourceSchema = z.object({
+  name: z.string().min(1, "Name is required"),
+  amount: z.coerce.number().positive("Amount must be positive"),
+  currency: z.nativeEnum(Currency),
+  notes: z.string().optional(),
+});
+
+export const BudgetBucketSchema = z.object({
+  name: z.string().min(1, "Name is required"),
+  type: z.nativeEnum(BucketType),
+  amount: z.coerce.number().positive("Amount must be positive"),
+  currency: z.nativeEnum(Currency),
+  color: z.string().optional(),
+  order: z.coerce.number().int().min(0).default(0),
+  notes: z.string().optional(),
+});
+
+export type IncomeSourceInput = z.infer<typeof IncomeSourceSchema>;
+export type BudgetBucketInput = z.infer<typeof BudgetBucketSchema>;
