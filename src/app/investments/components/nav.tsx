@@ -10,12 +10,13 @@ import { useTheme } from "@/lib/theme";
 import { useOptionalCurrency } from "./investments-shell";
 
 const NAV_LINKS = [
-  { label: "Investments", href: "/investments", enabled: true },
-  { label: "Projector",   href: "/projector",   enabled: true },
-  { label: "Assets",      href: "/assets",      enabled: true },
-  { label: "Liabilities", href: "/liabilities", enabled: true },
-  { label: "Cash Flow",   href: "/cashflow",    enabled: true },
-  { label: "Goals",       href: "/goals",       enabled: false },
+  { label: "Investments", href: "/investments", enabled: true, exact: false, exclude: "/investments/intelligence" },
+  { label: "Projector",   href: "/projector",   enabled: true, exact: false, exclude: undefined },
+  { label: "Assets",      href: "/assets",      enabled: true, exact: false, exclude: undefined },
+  { label: "Liabilities", href: "/liabilities", enabled: true, exact: false, exclude: undefined },
+  { label: "Cash Flow",   href: "/cashflow",    enabled: true, exact: false, exclude: undefined },
+  { label: "Intelligence", href: "/investments/intelligence", enabled: true, exact: true, exclude: undefined },
+  { label: "Goals",       href: "/goals",       enabled: false, exact: false, exclude: undefined },
 ];
 
 export function Nav() {
@@ -54,7 +55,9 @@ export function Nav() {
           </span>
           <nav className="hidden md:flex items-center gap-1">
             {NAV_LINKS.map((link) => {
-              const isActive = pathname.startsWith(link.href);
+              const isActive = link.exact
+              ? pathname === link.href
+              : pathname.startsWith(link.href) && (!link.exclude || !pathname.startsWith(link.exclude));
               if (!link.enabled) {
                 return (
                   <span

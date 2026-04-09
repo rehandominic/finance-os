@@ -9,12 +9,12 @@ import { useCurrency } from "./investments-shell";
 import type { PieSectorShapeProps } from "recharts/types/polar/Pie";
 
 const TYPE_CHART_COLORS: Record<InvestmentType, string> = {
-  INDIA_STOCK: "#f97316",
-  INDIA_MF:   "#8b5cf6",
-  US_STOCK:   "#3b82f6",
-  US_ETF:     "#06b6d4",
-  CRYPTO:     "#f59e0b",
-  PRIVATE:    "#ec4899",
+  INDIA_STOCK: "#2dd4bf",  // teal      — emerging markets
+  INDIA_MF:    "#4ade80",  // green     — funds / growth
+  US_STOCK:    "#60a5fa",  // steel blue — US equities
+  US_ETF:      "#818cf8",  // indigo    — index/passive
+  CRYPTO:      "#94a3b8",  // cool grey — digital assets
+  PRIVATE:     "#f59e0b",  // gold      — private/illiquid
 };
 
 interface AllocationSlice {

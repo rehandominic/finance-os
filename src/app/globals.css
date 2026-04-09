@@ -146,4 +146,17 @@
     letter-spacing: -0.025em;
     font-weight: 600;
   }
+
+}
+
+@keyframes siri-shift {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.siri-gradient {
+  background: linear-gradient(135deg, #a855f7, #ec4899, #f97316, #3b82f6, #06b6d4) !important;
+  background-size: 300% 300% !important;
+  animation: siri-shift 4s ease infinite;
 }

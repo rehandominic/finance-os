@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useCallback } from "react";
-import { Search, Plus } from "lucide-react";
+import { Search, Plus, Sparkles } from "lucide-react";
+import Link from "next/link";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -67,8 +68,17 @@ export function HoldingsFilterBar({
         </Tabs>
       </div>
 
-      {/* Right: Search + Add */}
+      {/* Right: Intelligence + Search + Add */}
       <div className="flex items-center gap-2 w-full sm:w-auto">
+        <Link href="/investments/intelligence">
+          <Button
+            size="sm"
+            className="h-8 gap-1.5 text-xs shrink-0 border-0 text-white siri-gradient hover:opacity-90"
+          >
+            <Sparkles className="h-3.5 w-3.5" />
+            Intelligence
+          </Button>
+        </Link>
         <div className="relative flex-1 sm:w-52">
           <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
           <Input
